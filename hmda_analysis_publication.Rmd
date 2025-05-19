@@ -1,6 +1,6 @@
 ---
-title: "2023 HMDA 데이터 분석"
-author: "작성자 이름"
+title: "2023 HMDA data analysis"
+author: "JH Yoon"
 date: "`r Sys.Date()`"
 output:
   github_document:
@@ -29,11 +29,11 @@ data_hmda <- fread("2023_hmda_lar.csv")
 
 ---
 
-## 1. 승인 현황 분석 (Action Taken)
+## 1.  Action Taken codes
 
 ```{r}
 
-### a. 설명 테이블
+### a. description table
 action_taken_desc <- data.table(
   action_taken = 1:8,
   description = c(
@@ -48,7 +48,7 @@ action_taken_desc <- data.table(
   )
 )
 
-### b. 계산 → 병합 → 포맷팅 순서
+### b. count by codes 
 deny_yn <- data_hmda[, .(
   cnt = .N,
   amt = trunc(sum(loan_amount) / bn)
@@ -78,7 +78,7 @@ knitr::kable(output_deny_yn)
 
 ---
 
-## 2. 인종별 승인 비율
+## 2. approval rate by race (rece is typo)
 
 ```{r}
 by_rece_info <- data_hmda[grepl('1|2|3',action_taken), .(
@@ -111,7 +111,7 @@ knitr::kable(output_by_rece_info_approved)
 
 ---
 
-## 3. 인종 x 소득 분위 별 거절률 히트맵
+## 3. deny rate heat map by race and income quintile
 
 ```{r, fig.width=8, fig.height=5}
  2023년 분위 경계 (단위: 천 달러로 가정 — HMDA income 변수 기준)
@@ -130,7 +130,7 @@ bucket_labels <- c(
   "P10 (Top 10%)"
 )
 
-# 소득 분위 버킷 생성
+# binning by income quintile
 data_hmda[, income_bucket := cut(
   income,                      # income은 1,000달러 단위여야 함
   breaks = bucket_breaks,
